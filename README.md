@@ -127,7 +127,7 @@ JavaScript部分
 #### 表格列的自定义属性
 
 |属性名称|描述|
-|:----:|:-----:|:-----:|
+|:----:|:-----:|
 |data-id|该列的唯一标识，没有配置则以data-name为标准，主要是为了解决data-name重复的场景|
 |data-name|该列的“显示”数据字段名|
 |data-sourcekey|该列“真实”数据字段名（排序数据）|
@@ -150,7 +150,7 @@ JavaScript部分
 #### API
 
 |函数名|描述|
-|:--:|:--:|:-----:|
+|:--:|:--:|
 |setPage(option)|修改页面参数，option为原参数下的page对象|
 |setTable(option)|修改表格参数，option为原参数下的table对象|
 |setTitle(str/dom)|修改表格标题，参数同title项的setTitle参数|
