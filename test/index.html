@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" type="text/css" href="../src/jquery.hhdata.gridlist.css">
+	<link rel="stylesheet" type="text/css" href="jquery.qtip.min.css">
+	<link rel="stylesheet" type="text/css" href="hhdata-base.min.css">
+	<link rel="stylesheet" type="text/css" href="font-Awesome/css/font-awesome.min.css">
+</head>
+<body>
+<table id="grid" class="grid-source">
+      <tr>
+				<td data-sort="true" data-extkey="name" data-extfmt="true" data-number="true" data-align="center" data-name="number">序号</td>
+      	<td data-id="col1" data-dragable data-name="color" data-sourcekey="upByteStr" data-hide="true" data-align="left" data-width="80" ><a href="###">列1</a></td>
+      	<td data-id="col2" data-dragable data-name="dnByteStr" data-sourcekey="upByteStr"  data-align="center" >列2</td>
+      	<td data-id="col3" data-dragable data-fixed="true" data-fomatter="fmtIcon" data-width="120" data-name="icon" data-align="center" >列3</td>
+      	<td data-id="col4" data-postfixed data-sortable data-dragable data-name="upMaxBpsStr" data-align="left" data-width="220" >列4</td>
+      	<td data-id="col5" data-sortable data-dragable data-name="maxBpsStr" data-align="left" data-width="220" >列5</td>
+      	<td data-id="col6" data-dragable data-name="dnMinBpsStr" data-sourcekey="upByteStr"  data-align="center" data-width="70" >列6</td>
+      	<td data-id="col7" data-dragable data-name="maxBpsStr" data-sourcekey="upByteStr"  data-align="center" data-width="70" >列7</td>
+      	<td data-id="col8" data-dragable data-name="minBpsStr" data-sourcekey="upByteStr"  data-align="center" data-width="70" >列8</td>
+      	<td data-id="col9" data-sortable data-sortfn="sortFnTest" data-dragable data-name="name" data-sourcekey="name"  data-align="center" data-width="70" >列9</td>
+      	<td data-id="col10" data-postfixed data-dragable data-name="totalBpsStr.aa.bb.cc[1]" data-extfmt="true" data-sourcekey="upByteStr"  data-align="center" data-width="70" data-fomatter="fomatterOperaCol">列10</td>
+      	<td data-hide="true" data-postfixed data-opera="true" data-operakey="opera0" data-align="center">操作列0</td>
+        <td data-postfixed data-opera="true" data-operakey="opera1" data-align="center">操作列1</td>
+      </tr>
+</table>
+<div id="gridTitle" style="line-height:26px;padding-left:10px;" >表格demo</div>
+<script src="../lib/jquery-1.10.2.js"></script>
+<script src="../src/jquery.hhdata.gridlist.js"></script>
+<script src="jquery.mockjax.js"></script>
+<script src="jquery.qtip.js"></script>
+<script src="index.js"></script>
+<script>
+
+$(function(){
+	var t1 = new Date().getTime()
+	// $.fn.gridList.setDefault({width:500}); 通过外挂方法改写默认配置
+	g = $("#grid").gridList({
+            // width:400,
+						height:400,
+						gridQuery: true,
+						// enableNum : false,
+						// cols : [{text:"aa",sort:true,name:"color",formatter:function(){console.log(arguments);return "aa1"}}],
+						colOpera : true,
+            title:$('#gridTitle'),
+						onColOperaSubmit : function (colList) {
+							console.log(colList);
+						},
+						colFormatter:{
+							'dnByteStr':function (val) {
+								// console.log(arguments);
+								return val;
+							}
+						},
+						colOperaInfo :(function () {
+							var $icon = $("<i class='icon-btn icon-btn-primary icon-question-sign icon-m-r'>");
+							$icon.qtip({
+						 	 	content : "这是对旁边几个按钮的说明",
+						 		position : {my:"right center",at:"left center",adjust: { target: $(document), resize: true,method:"flipinvert"  }},
+						 		hide: {fixed: true,delay: 300}
+						 	 })
+							return $icon;
+						})(),
+						onGridQuery : onGridQuery,
+            table:{
+							  // fullMode:true,
+                data:[],
+                data:fakeData["mstList"],
+								// url:'loadData',
+								// url:'loadDataNoPage',
+                checkbox:true,
+								loadMode:"local_page_load",
+								// loadMode:"local_load",
+								// loadMode:"url_load",
+                // loadMode:"url_page_load",
+                // loadMode:"url_page_post",
+                //fullMode:true,
+                checkboxName:"indexStr",
+								onChecked : function () {
+									// console.log(arguments);
+								},
+								operaCol : {
+									opera0 : function () {
+										// debugger;
+									},
+									opera1 : function () {
+										// debugger;
+									}
+								}
+            },
+            extTable:{
+            		data:[fakeData["mstList"][0]]
+            },
+            fixedTable:{
+                 fixedColName:['number',"totalBpsStr.aa.bb.cc[1]","dnByteStr"],
+                 postFixedColName:["col2"],
+            },
+						page:{
+								pageSize:50
+						}
+      })
+	var t2 = new Date().getTime()
+	// // console.log(t2-t1)
+})
+
+</script>
+</body>
+</html>

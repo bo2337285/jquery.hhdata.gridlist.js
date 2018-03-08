@@ -1,0 +1,139 @@
+表格组件接口
+
+var setting ={
+	width:"auto",//grid整体宽度(也可数字)
+	height:"auto",//grid整体高度(也可数字)
+	//表格标题
+	title:"Grid",//标题栏显示的文字（也可传入dom元素或者jQuery元素）
+	loadingTimeout:500,//最小等待遮罩显示时间
+	//数据
+	table:{
+		colDrag : false,//是否允许拖拽列
+		colWidthAdjust :false,//是否允许拖拽列宽
+		fullMode:false,//是否置满页面（让页面不出现滚动条）
+		url:"",//加载数据请求的url
+		queryParams:{},//加载数据请求url所跟的条件参数
+		data:[],//初始化的数据
+		loadMode:"local_load",//加载数据场景,对应有以下5种场景：
+					1."url_page_post",//url请求且有分页，分页模式为post
+					2."url_page_load",//url请求且有分页，分页模式为load（一次加载全数据再计算分页）
+					3."url_load",//url请求且无分页
+					4."local_page_load",//data指定数据且有分页，分页模式为load（一次加载全数据再计算分页）
+					5."local_load"//data指定数据且无分页
+		dataKey:"list",//加载数据对应在对象里的键(可多层,例：ajax返回数据{result:1,list:[.....]},则dataKey为"list",若是{result:1,data:{list:[...]}},则dataKey为"data.list")
+		onRowClick:function(rows,cell,rowData){},//点击行的时候的回调,rows是当前点击的行（如果一部分列被锁定，则会有两个tr）(jquery对象)，cell是当前点中的单元格(jquery对象)，rowData是当前行上的所有数据(即对应data当前行的那一条元数据)
+		onRowEnter:function(rows,currCell,rowData){},//鼠标移入行回调
+		onRowLeave:function(rows,currCell,rowData){},//鼠标移出行回调
+		checkbox:false,//是否显示复选框
+		checkboxName:"",//checkbox对应在数据里的键
+		onChecked:function($rowArgs,$td,oRowData,checked){},//当点击复选框
+		onCheckedAll:function(checked){},//当全选
+		onLoadDataFinish:function(){},//ajax数据加载完成回调
+		onLoadDataSessionout:function(res){},//ajax数据加载session超时回调
+		onLoadDataError:function(res){},//ajax数据加载错误回调
+		onRenderDataFinish:function(){},//数据加载完成回调（包括ajax）
+		operaCol:{key0:function($rowArgs,$td,rowData){},key1:function($rowArgs,$td,rowData){}}
+		
+		/*
+		key为该操作列上的data-operakey上的值，用于区分操作列
+		初始化操作列的函数，return的东西才是在单元格内显示的东西， 
+		例：operaCol:function(rows,cTd,rowData){
+              var $btn = $("<a href='javascript:;' class='icon-bell' ></a>");
+              $btn.on("click",function(e){
+                console.log("ring!");
+                e.stopPropagation();
+              })
+              return $btn;
+            }
+         */
+	},
+	//汇总行
+	extTable:{
+		data:[],//汇总行数据
+		dataKey: 'extlist',
+		onRowClick:function(rows,cell,rowData){}
+	},
+	//固定列
+	fixedTable:{
+		fixedColName:[]//锁定列数组,参数为该列的data-name,被锁定的列会从原列中抽出来置于锁定容器中
+		//例：有col0,col1,col2,col3,col4 ;若fixedColName:["col1","col3"],则实际显示顺序为col1,col3,col0,col2,col4
+	},
+	//分页
+	page:{
+		//enable:false,//是否显示分页(废除)
+		//pageType:"load",//load：根据缓存data加载，post：ajax加载;若为load模式，则dataTotal直接计算(废除)
+		pageNumber:1,//当前分页索引
+		pageSize:20,//当前分页显示条数(应该作为参数)
+		pageList:[20,50,100],//分页显示条数可选范围
+		dataTotal:0//总数据条数(改成传key)
+	}
+}
+
+
+表格组件应用接口
+var gridlist = $("#grid").gridList(
+			{
+                  width:"auto",
+                  table:{
+                        data:fakeData["mstList"],
+                        onRowClick:function(rows,cTd,rowData){
+                            console.log(rows);
+                            console.log(cTd);
+                            console.log(rowData.dnMaxBpsStr.text);
+                        }
+                  }
+            })
+
+
+表格列自定义属性阐释：
+
+data-name：该列的“显示”数据字段名
+data-sourcekey：该列“真实”数据的字段名（排序数据）
+data-sort：该列是否排序
+data-align：该列文字显示位置
+data-width：列宽
+data-opera：是否为操作列（走操作列格式化函数）("true" || "fasle")
+data-operakey：对应操作列函数的键
+data-number：是否为序号列（序号）("true" || "fasle")
+data-fomatter：列内容格式化函数 (函数名) 参数解释：value:当前字段的值,$td:当前单元格,rowData:该行元数据
+/*
+	例1: data-fomatter = "aa"
+	然后在页面上定义一个
+	function aa(value,$td,rowData){
+		return value;
+	}
+	value为该单元格原本显示的值,
+	例2 data-fomatter = "fomatter"
+	function fomatter(value,$td,rowData){
+		value = "<a href='###'>"+value+"</a>"
+		return value;
+	}
+	即把原来显示的文字格式化成一个链接
+*/
+data-hide: 是否隐藏该列
+data-extkey: 汇总行该列的“显示”数据字段名(这个会覆盖原来data-name指定的值)
+data-extfmt: 汇总行该列是否需要格式化 ("true" || "fasle")(默认不格式化)
+/*
+
+2015/08/11 新增属性
+data-dragable:该列可拖拽
+
+
+
+*/
+表格对外暴露方法：
+grid.getCheckedRow() //获取勾选的行，返回的对象为{rows:[],rowDatas:[]},其中rows是具体页面元素集合，rowDatas是行数据
+grid.setPage(option) //修改页面参数，option为原grid参数下的page
+grid.setTable(option) //修改表格参数，option为原grid参数下的table
+grid.setTitle(str||dom) //修改表格标题，参数跟原来一样
+grid.hideCol($td) //隐藏某一列，参数为该列上的某个td
+grid.showCol($td) //显示某一列，参数为该列上的某个td
+grid.hideRow($td) //隐藏某一行，参数为该行上的某个td
+grid.showRow($td) //显示某一行，参数为该行上的某个td
+grid.loadData() //更新grid的table参数并重新加载grid数据
+grid.showGridTips($element,dom,option)//显示悬浮框,$element为触发悬浮层出现的jQuery元素，例如某个按钮,dom为显示在悬浮框内的内容，dom元素或者string,option为悬浮框的属性参数
+grid.hideGridTips()//隐藏悬浮框
+grid.updateData(data)//更新表格数据
+grid.updateExtData(data)//更新汇总行数据
+grid.isVisible()//判断gird是否显示，true为显示
+grid.clearAllData()//清除所有数据,包括汇总行
